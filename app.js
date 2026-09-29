@@ -4,6 +4,7 @@
   const $ = (id) => document.getElementById(id);
   const input = $('json-input');
   const state = { value: null, output: '', mode: 'format', view: 'code', valid: false };
+  let parseTimer;
   const sample = {
     project: 'JSON Studio',
     version: '1.0.0',
@@ -39,7 +40,7 @@
     $('copy-btn').disabled = true;
     $('download-btn').disabled = true;
     showOnly('empty-state');
-    setStatus('Sẵn sàng xử lý');
+    setStatus('Tự động định dạng khi nhập');
   }
 
   function escapeHTML(value) {
@@ -173,6 +174,7 @@
   }
 
   function process(mode) {
+    clearTimeout(parseTimer);
     const source = input.value.trim();
     if (!source) {
       clearResult();
@@ -209,7 +211,15 @@
     setStatus(mode === 'validate' ? 'JSON hợp lệ' : mode === 'minify' ? 'Đã thu gọn JSON' : 'Đã định dạng JSON');
   }
 
-  $('format-btn').addEventListener('click', () => process('format'));
+  function scheduleParse(delay = 400) {
+    clearTimeout(parseTimer);
+    updateInputMeta();
+    if (state.valid || !$('error-view').hidden) clearResult();
+    if (!input.value.trim()) { clearResult(); return; }
+    setStatus('Đang đọc JSON...');
+    parseTimer = setTimeout(() => process('format'), delay);
+  }
+
   $('minify-btn').addEventListener('click', () => process('minify'));
   $('validate-btn').addEventListener('click', () => process('validate'));
   $('sample-btn').addEventListener('click', () => { input.value = JSON.stringify(sample); updateInputMeta(); process('format'); });
@@ -218,11 +228,11 @@
   $('tree-tab').addEventListener('click', () => setView('tree'));
   $('tree-search').addEventListener('input', filterTree);
   $('indent-size').addEventListener('change', () => { if (state.valid && state.mode !== 'minify') process(state.mode); });
-  input.addEventListener('input', () => { updateInputMeta(); if (state.valid || !$('error-view').hidden) clearResult(); });
+  input.addEventListener('input', (event) => scheduleParse(event.inputType === 'insertFromPaste' ? 0 : 400));
   input.addEventListener('scroll', () => { $('input-lines').style.transform = `translateY(${-input.scrollTop}px)`; });
   input.addEventListener('keydown', (event) => {
     if ((event.ctrlKey || event.metaKey) && event.key === 'Enter') { event.preventDefault(); process('format'); }
-    if (event.key === 'Tab') { event.preventDefault(); const start = input.selectionStart; input.setRangeText('\t', start, input.selectionEnd, 'end'); updateInputMeta(); }
+    if (event.key === 'Tab') { event.preventDefault(); const start = input.selectionStart; input.setRangeText('\t', start, input.selectionEnd, 'end'); scheduleParse(); }
   });
   $('file-input').addEventListener('change', async (event) => {
     const file = event.target.files?.[0];

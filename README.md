@@ -1,13 +1,18 @@
 # JSON Studio
 
-Trang web định dạng, kiểm tra và khám phá JSON ngay trên trình duyệt. Không cần máy chủ hay bước build.
+Dán hoặc nhập JSON để xem bản được định dạng tự động. Mọi thao tác chạy ngay trong trình duyệt; nội dung JSON không được gửi lên máy chủ.
 
-## Sử dụng
+![Giao diện JSON Studio với JSON đầu vào và kết quả đã định dạng](assets/json-studio.png)
 
-Mở `index.html` trong trình duyệt hoặc chạy `python3 -m http.server 8000` trong thư mục này. Dán JSON, rồi chọn **Định dạng JSON**, **Thu gọn** hoặc **Kiểm tra**. Chế độ **Cây** cho phép tìm kiếm, mở và thu gọn các nhánh.
+## Chức năng
 
-## Cloudflare Pages
+- **Định dạng tự động:** Dán JSON là có kết quả ngay; khi gõ, kết quả cập nhật sau một khoảng dừng ngắn.
+- **Kiểm tra lỗi:** Hiển thị lỗi cú pháp cùng dòng và cột khi có thể xác định.
+- **Xem dạng cây:** Mở, thu gọn và tìm khóa hoặc giá trị.
+- **Tiện ích:** Thu gọn JSON, đổi mức thụt lề, mở tệp, sao chép và tải kết quả.
 
-Kết nối kho GitHub này với Cloudflare Pages. Chọn **Framework preset: None**, để trống **Build command**, và đặt **Build output directory: .** (thư mục gốc của kho). Không cần biến môi trường.
+## Chạy thử
 
-Mọi thao tác phân tích JSON diễn ra trong trình duyệt; nội dung JSON không được gửi đến máy chủ.
+Mở `index.html` trực tiếp, hoặc chạy `python3 -m http.server 8000` rồi truy cập `http://localhost:8000`.
+
+Trang là HTML, CSS và JavaScript tĩnh, không cần cài thư viện hay build trước khi đưa lên Cloudflare Pages.
