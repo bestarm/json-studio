@@ -3,7 +3,7 @@
 
   const $ = (id) => document.getElementById(id);
   const input = $('json-input');
-  const state = { value: null, output: '', mode: 'format', view: 'code', valid: false };
+  const state = { value: null, output: '', mode: 'format', view: 'code', valid: false, recovered: false };
   let parseTimer;
   const sample = {
     project: 'JSON Studio',
@@ -35,19 +35,21 @@
     state.value = null;
     state.output = '';
     state.valid = false;
+    state.recovered = false;
     $('output-meta').textContent = 'Sẵn sàng';
-    $('output-subtitle').textContent = 'JSON đã được định dạng';
+    $('output-subtitle').textContent = 'Mã đã định dạng';
+    $('parse-notice').hidden = true;
     $('copy-btn').disabled = true;
     $('download-btn').disabled = true;
     showOnly('empty-state');
-    setStatus('Tự động định dạng khi nhập');
+    setStatus('Sẵn sàng');
   }
 
   function escapeHTML(value) {
     return value.replace(/[&<>"']/g, (char) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[char]);
   }
 
-  // Tokenize only after JSON.parse has accepted the input. Escape every token before inserting markup.
+  // Highlight only normalized JSON and escape every token before inserting markup.
   function highlight(json) {
     const token = /("(?:\\.|[^"\\])*"\s*:?)|(-?\d+(?:\.\d+)?(?:[eE][+-]?\d+)?)|\b(true|false|null)\b/g;
     let result = '';
@@ -182,33 +184,42 @@
       setStatus('Hãy nhập JSON trước khi xử lý', true);
       return;
     }
-    let value;
-    try {
-      value = JSON.parse(source);
-    } catch (error) {
+    const parsed = window.JsonStudioParser.parseInput(source);
+    if (parsed.error) {
       state.valid = false;
-      $('error-message').textContent = errorLocation(error.message, input.value);
-      $('output-meta').textContent = 'JSON không hợp lệ';
-      $('output-subtitle').textContent = 'Cần sửa lỗi cú pháp';
+      $('parse-notice').hidden = true;
+      $('error-message').textContent = errorLocation(parsed.error.message, input.value);
+      $('output-meta').textContent = 'Không đọc được';
+      $('output-subtitle').textContent = 'Cần sửa dữ liệu';
       $('copy-btn').disabled = true;
       $('download-btn').disabled = true;
       showOnly('error-view');
-      setStatus('Có lỗi cú pháp JSON', true);
+      setStatus('Không đọc được dữ liệu', true);
       return;
     }
-    state.value = value;
+    state.value = parsed.value;
     state.valid = true;
+    state.recovered = parsed.recovered;
     state.mode = mode;
     const indent = $('indent-size').value === 'tab' ? '\t' : Number($('indent-size').value);
-    state.output = JSON.stringify(value, null, mode === 'minify' ? 0 : indent);
-    $('output-subtitle').textContent = mode === 'minify' ? 'JSON đã được thu gọn' : mode === 'validate' ? 'Cú pháp JSON hợp lệ' : 'JSON đã được định dạng';
+    state.output = JSON.stringify(parsed.value, null, mode === 'minify' ? 0 : indent);
+    $('parse-notice').hidden = !parsed.recovered;
+    if (parsed.recovered) {
+      const emptyValues = parsed.issues.some((issue) => issue.includes('Giá trị trống'));
+      $('parse-notice').textContent = `Dữ liệu chưa phải JSON chuẩn. Đã đọc để xem dạng cây${emptyValues ? '; giá trị trống được giữ là chuỗi rỗng' : ''}${parsed.issues.length ? ` (${parsed.issues.length} chỗ cần lưu ý)` : ''}.`;
+    }
+    $('output-subtitle').textContent = parsed.recovered ? 'Đã đọc dữ liệu chưa chuẩn' : mode === 'minify' ? 'JSON đã thu gọn' : 'JSON hợp lệ';
     $('output-meta').textContent = `${state.output.length.toLocaleString('vi-VN')} ký tự · ${state.output.split('\n').length.toLocaleString('vi-VN')} dòng`;
     $('copy-btn').disabled = false;
     $('download-btn').disabled = false;
     renderCode();
-    if (state.view === 'tree') renderTree();
-    showOnly(state.view === 'tree' ? 'tree-view' : 'code-view');
-    setStatus(mode === 'validate' ? 'JSON hợp lệ' : mode === 'minify' ? 'Đã thu gọn JSON' : 'Đã định dạng JSON');
+    if (parsed.recovered && mode !== 'minify') setView('tree');
+    else if (mode === 'minify') setView('code');
+    else {
+      if (state.view === 'tree') renderTree();
+      showOnly(state.view === 'tree' ? 'tree-view' : 'code-view');
+    }
+    setStatus(parsed.recovered ? 'Đã đọc dữ liệu chưa chuẩn' : mode === 'minify' ? 'Đã thu gọn JSON' : 'JSON hợp lệ');
   }
 
   function scheduleParse(delay = 400) {
