@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#f7f8fb" />
+    <meta name="description" content="Định dạng, kiểm tra và khám phá JSON ngay trong trình duyệt. Dữ liệu của bạn không được gửi lên máy chủ." />
+    <title>JSON Studio — Định dạng JSON nhanh và dễ đọc</title>
+    <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="./styles.css" />
+    <script src="./app.js" defer></script>
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="site-header">
+        <a class="brand" href="./" aria-label="JSON Studio, trang chủ">
+          <span class="brand-mark" aria-hidden="true">{<span>:</span>}</span>
+          <span>json<span class="brand-light">studio</span><span class="brand-dot">.</span></span>
+        </a>
+        <div class="header-right">
+          <span class="privacy-pill"><span class="privacy-dot"></span> Xử lý ngay trên trình duyệt</span>
+          <button id="theme-toggle" class="icon-button theme-button" type="button" aria-label="Đổi giao diện sáng tối" title="Đổi giao diện sáng tối">◐</button>
+        </div>
+      </header>
+
+      <main>
+        <section class="intro" aria-labelledby="page-title">
+          <div class="eyebrow"><span class="eyebrow-line"></span> CÔNG CỤ DÀNH CHO LẬP TRÌNH VIÊN <span class="eyebrow-line"></span></div>
+          <h1 id="page-title">JSON rõ ràng hơn<span>.</span><br /><em>Chỉ trong một cú nhấp.</em></h1>
+          <p>Dán dữ liệu vào, định dạng và khám phá cấu trúc JSON của bạn. Nhanh, gọn và riêng tư.</p>
+          <div class="intro-badges"><span>✦ Không cần đăng ký</span><span>✦ Không gửi dữ liệu đi</span><span>✦ Hoàn toàn miễn phí</span></div>
+        </section>
+
+        <section class="workspace" aria-label="Trình định dạng JSON">
+          <div class="workspace-toolbar">
+            <div class="toolbar-title"><span class="toolbar-spark">✳</span> Không gian làm việc <span class="toolbar-separator"></span> <span class="toolbar-subtitle">Chỉnh sửa và xem kết quả tức thì</span></div>
+            <div class="toolbar-options"><label for="indent-size">Thụt lề</label><select id="indent-size" aria-label="Số khoảng trắng thụt lề"><option value="2">2 dấu cách</option><option value="4">4 dấu cách</option><option value="tab">Tab</option></select></div>
+          </div>
+
+          <div class="panes">
+            <section class="pane input-pane" aria-labelledby="input-title">
+              <div class="pane-header"><div class="pane-heading"><span class="pane-icon input-icon">{ }</span><div><h2 id="input-title">JSON đầu vào</h2><small>Dán hoặc nhập dữ liệu của bạn</small></div></div><div class="pane-header-actions"><button id="sample-btn" class="text-button" type="button">Dữ liệu mẫu</button><button id="clear-btn" class="text-button muted" type="button">Xóa</button></div></div>
+              <div class="editor-wrap"><div id="input-lines" class="line-numbers" aria-hidden="true">1</div><textarea id="json-input" spellcheck="false" aria-label="JSON đầu vào" placeholder="Dán JSON của bạn vào đây..." autocomplete="off" autocapitalize="off" autocorrect="off"></textarea></div>
+              <div class="pane-footer"><div id="input-meta" class="meta">0 ký tự <span>·</span> 0 dòng</div><label class="upload-button" for="file-input"><span aria-hidden="true">↥</span> Mở tệp JSON</label><input id="file-input" type="file" accept=".json,application/json,text/plain" hidden /></div>
+            </section>
+
+            <section class="pane output-pane" aria-labelledby="output-title">
+              <div class="pane-header"><div class="pane-heading"><span class="pane-icon output-icon">✓</span><div><h2 id="output-title">Kết quả</h2><small id="output-subtitle">JSON đã được định dạng</small></div></div><div class="view-switch" role="group" aria-label="Kiểu hiển thị kết quả"><button id="code-tab" class="view-tab active" type="button" aria-pressed="true">Mã</button><button id="tree-tab" class="view-tab" type="button" aria-pressed="false">Cây</button></div></div>
+              <div id="output-content" class="output-content"><div id="empty-state" class="empty-state"><div class="empty-illustration"><span>{ }</span><i>✦</i></div><strong>Kết quả sẽ xuất hiện ở đây</strong><p>Nhập JSON ở khung bên trái rồi chọn một thao tác để bắt đầu.</p></div><div id="code-view" class="code-view" hidden><div id="output-lines" class="line-numbers" aria-hidden="true"></div><pre id="code-output" tabindex="0"></pre></div><div id="tree-view" class="tree-view" hidden><label class="tree-search-label" for="tree-search">Tìm trong cây</label><input id="tree-search" class="tree-search" type="search" placeholder="Tìm khóa hoặc giá trị..." /><div id="tree-results" class="tree-results"></div><div id="tree-root"></div></div><div id="error-view" class="error-view" role="alert" hidden><span class="error-icon">!</span><div><strong>JSON chưa hợp lệ</strong><p id="error-message"></p></div></div></div>
+              <div class="pane-footer"><div id="output-meta" class="meta">Sẵn sàng</div><div class="output-actions"><button id="download-btn" class="footer-button" type="button" disabled title="Tải kết quả"><span aria-hidden="true">↓</span> Tải xuống</button><button id="copy-btn" class="footer-button" type="button" disabled title="Sao chép kết quả"><span aria-hidden="true">▢</span> Sao chép</button></div></div>
+            </section>
+          </div>
+
+          <div class="action-bar"><div class="primary-actions"><button id="format-btn" class="primary-button" type="button"><span aria-hidden="true">✦</span> Định dạng JSON</button><button id="minify-btn" class="secondary-button" type="button"><span aria-hidden="true">≡</span> Thu gọn</button><button id="validate-btn" class="secondary-button" type="button"><span aria-hidden="true">✓</span> Kiểm tra</button></div><div id="status" class="status" role="status" aria-live="polite"><span class="status-dot"></span> Sẵn sàng xử lý</div></div>
+        </section>
+
+        <section class="features" aria-label="Điểm nổi bật"><div class="feature"><span class="feature-icon lavender">✦</span><div><strong>Đọc dễ hơn</strong><p>Cấu trúc rõ ràng với màu sắc và thụt lề hợp lý.</p></div></div><div class="feature"><span class="feature-icon mint">⌁</span><div><strong>Khám phá nhanh</strong><p>Mở và thu gọn từng nhánh trong chế độ cây.</p></div></div><div class="feature"><span class="feature-icon peach">◈</span><div><strong>Riêng tư tuyệt đối</strong><p>Dữ liệu được xử lý ngay trên thiết bị của bạn.</p></div></div></section>
+      </main>
+      <footer class="site-footer"><span>© 2026 JSON Studio</span><span>Một công cụ nhỏ cho công việc mỗi ngày <span class="footer-heart">♥</span></span></footer>
+    </div>
+  </body>
+</html>
