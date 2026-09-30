@@ -24,7 +24,6 @@
     const count = input.value.length;
     const lines = input.value ? input.value.split('\n').length : 0;
     $('input-meta').innerHTML = `${count.toLocaleString('vi-VN')} ký tự <span>·</span> ${lines.toLocaleString('vi-VN')} dòng`;
-    $('input-lines').textContent = Array.from({ length: Math.max(1, lines) }, (_, i) => i + 1).join('\n');
   }
 
   function showOnly(id) {
@@ -240,7 +239,6 @@
   $('tree-search').addEventListener('input', filterTree);
   $('indent-size').addEventListener('change', () => { if (state.valid && state.mode !== 'minify') process(state.mode); });
   input.addEventListener('input', (event) => scheduleParse(event.inputType === 'insertFromPaste' ? 0 : 400));
-  input.addEventListener('scroll', () => { $('input-lines').style.transform = `translateY(${-input.scrollTop}px)`; });
   input.addEventListener('keydown', (event) => {
     if ((event.ctrlKey || event.metaKey) && event.key === 'Enter') { event.preventDefault(); process('format'); }
     if (event.key === 'Tab') { event.preventDefault(); const start = input.selectionStart; input.setRangeText('\t', start, input.selectionEnd, 'end'); scheduleParse(); }

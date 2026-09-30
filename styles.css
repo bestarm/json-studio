@@ -79,7 +79,7 @@ body.pane-resizing iframe, body.pane-resizing textarea { pointer-events: none; }
 .editor-wrap, .output-content { position: relative; flex: 1; min-height: 0; overflow: auto; background: var(--surface); }
 .editor-wrap { display: flex; }
 .line-numbers { flex: none; min-width: 42px; padding: 16px 9px 16px 12px; border-right: 1px solid var(--border); text-align: right; color: #b6bac8; font: 12px/22px 'DM Mono', monospace; white-space: pre; user-select: none; }
-.editor-wrap textarea { display: block; flex: 1; width: 100%; min-height: 100%; resize: none; outline: 0; border: 0; padding: 16px; background: transparent; color: var(--code); font: 12px/22px 'DM Mono', monospace; white-space: pre; tab-size: 2; }
+.editor-wrap textarea { display: block; flex: 1; width: 100%; min-height: 100%; resize: none; outline: 0; border: 0; padding: 16px; background: transparent; color: var(--code); font: 12px/22px 'DM Mono', monospace; white-space: pre-wrap; overflow-wrap: anywhere; tab-size: 2; }
 .editor-wrap textarea::placeholder { color: #b2b6c5; }
 .code-view { display: flex; min-height: 100%; }
 .code-view pre { margin: 0; padding: 16px; color: var(--code); font: 12px/22px 'DM Mono', monospace; white-space: pre; tab-size: 2; }
