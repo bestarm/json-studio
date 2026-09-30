@@ -40,6 +40,10 @@
     $('parse-notice').hidden = true;
     $('copy-btn').disabled = true;
     $('download-btn').disabled = true;
+    for (const id of ['minify-btn', 'validate-btn']) {
+      $(id).classList.remove('active');
+      $(id).setAttribute('aria-pressed', 'false');
+    }
     showOnly('empty-state');
     setStatus('Sẵn sàng');
   }
@@ -186,6 +190,10 @@
     const parsed = window.JsonStudioParser.parseInput(source);
     if (parsed.error) {
       state.valid = false;
+      for (const id of ['minify-btn', 'validate-btn']) {
+        $(id).classList.remove('active');
+        $(id).setAttribute('aria-pressed', 'false');
+      }
       $('parse-notice').hidden = true;
       $('error-message').textContent = errorLocation(parsed.error.message, input.value);
       $('output-meta').textContent = 'Không đọc được';
@@ -208,6 +216,11 @@
       $('parse-notice').textContent = `Dữ liệu chưa phải JSON chuẩn. Đã đọc để xem dạng cây${emptyValues ? '; giá trị trống được giữ là chuỗi rỗng' : ''}${parsed.issues.length ? ` (${parsed.issues.length} chỗ cần lưu ý)` : ''}.`;
     }
     $('output-subtitle').textContent = parsed.recovered ? 'Đã đọc dữ liệu chưa chuẩn' : mode === 'minify' ? 'JSON đã thu gọn' : 'JSON hợp lệ';
+    // Đánh dấu nút đang được chọn giống tab Mã/Cây
+    $('minify-btn').classList.toggle('active', mode === 'minify');
+    $('minify-btn').setAttribute('aria-pressed', String(mode === 'minify'));
+    $('validate-btn').classList.toggle('active', mode === 'validate');
+    $('validate-btn').setAttribute('aria-pressed', String(mode === 'validate'));
     $('output-meta').textContent = `${state.output.length.toLocaleString('vi-VN')} ký tự · ${state.output.split('\n').length.toLocaleString('vi-VN')} dòng`;
     $('copy-btn').disabled = false;
     $('download-btn').disabled = false;
