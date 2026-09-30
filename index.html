@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#f5f6fa" />
+    <meta name="description" content="Đọc và khám phá JSON hoặc dữ liệu dạng key=value dưới dạng cây ngay trong trình duyệt." />
+    <title>JSON Studio — Xem JSON dạng cây</title>
+    <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="./styles.css" />
+    <script src="./parser.js" defer></script>
+    <script src="./app.js" defer></script>
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="site-header">
+        <a class="brand" href="./" aria-label="JSON Studio, trang chủ"><span class="brand-mark">{ }</span><span>json<span class="brand-light">studio</span><span class="brand-dot">.</span></span></a>
+        <div class="header-right"><span class="header-hint">JSON · key=value · dạng cây</span><span class="privacy-pill"><span class="privacy-dot"></span> Chạy trên trình duyệt</span><button id="theme-toggle" class="icon-button" type="button" aria-label="Đổi giao diện sáng tối" title="Đổi giao diện sáng tối">◐</button></div>
+      </header>
+
+      <main class="workspace" aria-labelledby="page-title">
+        <div class="workspace-toolbar"><div><h1 id="page-title">Không gian làm việc</h1><p>Dán dữ liệu vào bên trái. Kết quả hiện ngay bên phải.</p></div><div class="toolbar-options"><label for="indent-size">Thụt lề</label><select id="indent-size" aria-label="Số khoảng trắng thụt lề"><option value="2">2 dấu cách</option><option value="4">4 dấu cách</option><option value="tab">Tab</option></select></div></div>
+
+        <div class="panes" id="panes">
+          <section class="pane input-pane" aria-labelledby="input-title">
+            <div class="pane-header"><div class="pane-heading"><span class="pane-icon input-icon">{ }</span><div><h2 id="input-title">Đầu vào</h2><small>JSON hoặc dữ liệu key=value</small></div></div><div class="pane-header-actions"><button id="sample-btn" class="text-button" type="button">Mẫu</button><button id="clear-btn" class="text-button muted" type="button">Xóa</button></div></div>
+            <div class="editor-wrap"><div id="input-lines" class="line-numbers" aria-hidden="true">1</div><textarea id="json-input" spellcheck="false" aria-label="Dữ liệu đầu vào" placeholder="Dán dữ liệu vào đây..." autocomplete="off" autocapitalize="off" autocorrect="off"></textarea></div>
+            <div class="pane-footer"><div id="input-meta" class="meta">0 ký tự · 0 dòng</div><label class="upload-button" for="file-input">↥ &nbsp;Mở tệp</label><input id="file-input" type="file" accept=".json,.txt,application/json,text/plain" hidden /></div>
+          </section>
+
+          <div id="pane-divider" class="pane-divider" role="separator" aria-orientation="vertical" aria-label="Thanh kéo đổi kích thước hai khung" tabindex="0" title="Kéo để thu gọn hoặc mở rộng · Nhấp đúp để chia đều"><span class="divider-grip" aria-hidden="true"><i></i><i></i><i></i></span></div>
+
+          <section class="pane output-pane" aria-labelledby="output-title">
+            <div class="pane-header"><div class="pane-heading"><span class="pane-icon output-icon">✓</span><div><h2 id="output-title">Kết quả</h2><small id="output-subtitle">Mã đã định dạng</small></div></div><div class="view-switch" role="group" aria-label="Kiểu hiển thị kết quả"><button id="code-tab" class="view-tab active" type="button" aria-pressed="true">Mã</button><button id="tree-tab" class="view-tab" type="button" aria-pressed="false">Cây</button></div></div>
+            <div id="parse-notice" class="parse-notice" role="status" hidden></div>
+            <div id="output-content" class="output-content"><div id="empty-state" class="empty-state"><div class="empty-illustration">{ }</div><strong>Sẵn sàng</strong><p>Dán JSON hoặc dữ liệu dạng key=value để xem kết quả.</p></div><div id="code-view" class="code-view" hidden><div id="output-lines" class="line-numbers" aria-hidden="true"></div><pre id="code-output" tabindex="0"></pre></div><div id="tree-view" class="tree-view" hidden><label class="tree-search-label" for="tree-search">Tìm trong cây</label><input id="tree-search" class="tree-search" type="search" placeholder="Tìm khóa hoặc giá trị..." /><div id="tree-results" class="tree-results"></div><div id="tree-root"></div></div><div id="error-view" class="error-view" role="alert" hidden><span class="error-icon">!</span><div><strong>Chưa thể đọc dữ liệu</strong><p id="error-message"></p></div></div></div>
+            <div class="pane-footer"><div id="output-meta" class="meta">Sẵn sàng</div><div class="output-actions"><button id="download-btn" class="footer-button" type="button" disabled>↓ &nbsp;Tải xuống</button><button id="copy-btn" class="footer-button" type="button" disabled>▢ &nbsp;Sao chép</button></div></div>
+          </section>
+        </div>
+
+        <div class="action-bar"><div class="primary-actions"><button id="minify-btn" class="secondary-button" type="button">≡ &nbsp;Thu gọn</button><button id="validate-btn" class="secondary-button" type="button">✓ &nbsp;Kiểm tra</button></div><div id="status" class="status" role="status" aria-live="polite"><span class="status-dot"></span> Sẵn sàng</div></div>
+      </main>
+    </div>
+  </body>
+</html>
