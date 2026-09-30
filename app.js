@@ -5,6 +5,169 @@
   const input = $('json-input');
   const state = { value: null, output: '', mode: 'format', view: 'code', valid: false, recovered: false };
   let parseTimer;
+
+  // ===== Đa ngôn ngữ (i18n): tiếng Anh là mặc định =====
+  const STRINGS = {
+    en: {
+      headerHint: 'JSON · key=value · tree view',
+      privacy: 'Runs in your browser',
+      workspace: 'Workspace',
+      workspaceHint: 'Paste data on the left. The result appears instantly on the right.',
+      indent: 'Indent',
+      indent2: '2 spaces',
+      indent4: '4 spaces',
+      input: 'Input',
+      inputHint: 'JSON or key=value data',
+      sample: 'Sample',
+      clear: 'Clear',
+      inputPlaceholder: 'Paste your data here...',
+      openFile: 'Open file',
+      dividerTitle: 'Drag to resize · Double-click to split evenly',
+      output: 'Output',
+      code: 'Code',
+      tree: 'Tree',
+      ready: 'Ready',
+      readyHint: 'Paste JSON or key=value data to see the result.',
+      treeSearchLabel: 'Search in tree',
+      treeSearchPlaceholder: 'Find a key or value...',
+      errorTitle: 'Could not read data',
+      download: 'Download',
+      copy: 'Copy',
+      minify: 'Minify',
+      validate: 'Validate',
+      chars: 'chars',
+      lines: 'lines',
+      formattedCode: 'Formatted code',
+      enterJsonFirst: 'Enter some JSON first',
+      unreadable: 'Unreadable',
+      fixData: 'Fix the data',
+      unreadableData: 'Could not read the data',
+      recoveredSubtitle: 'Recovered non-standard data',
+      minifiedSubtitle: 'Minified JSON',
+      validSubtitle: 'Valid JSON',
+      noticePrefix: 'Data is not standard JSON. It was recovered for viewing',
+      noticeEmpty: '; empty values were kept as empty strings',
+      noticeIssues: (n) => ` (${n} spot${n > 1 ? 's' : ''} to review)`,
+      recoveredStatus: 'Recovered non-standard data',
+      minifiedStatus: 'JSON minified',
+      validStatus: 'Valid JSON',
+      reading: 'Reading JSON...',
+      copied: 'Copied to clipboard',
+      copyFailed: 'Could not copy automatically',
+      treeHint: 'Click the arrows to expand or collapse branches',
+      treeResults: (n) => `${n} match${n > 1 ? 'es' : ''}`,
+      depthLimit: 'Depth exceeds display limit',
+      toggleBranch: 'Collapse or expand this branch',
+      elements: 'items',
+      keys: 'keys',
+      lineCol: (line, col, msg) => `Line ${line}, column ${col}: ${msg}`,
+      statusChars: (chars, lines) => `${chars} chars · ${lines} lines`,
+      inputAria: 'Input data',
+      outputViewAria: 'Output view',
+      dividerAria: 'Resize panes',
+      expandPane: (label) => `Expand the ${label} pane`,
+      langAria: 'Switch language',
+      themeAria: 'Toggle dark mode',
+      htmlLang: 'en',
+      locale: 'en-US',
+    },
+    vi: {
+      headerHint: 'JSON · key=value · dạng cây',
+      privacy: 'Chạy trên trình duyệt',
+      workspace: 'Không gian làm việc',
+      workspaceHint: 'Dán dữ liệu vào bên trái. Kết quả hiện ngay bên phải.',
+      indent: 'Thụt lề',
+      indent2: '2 dấu cách',
+      indent4: '4 dấu cách',
+      input: 'Đầu vào',
+      inputHint: 'JSON hoặc dữ liệu key=value',
+      sample: 'Mẫu',
+      clear: 'Xóa',
+      inputPlaceholder: 'Dán dữ liệu vào đây...',
+      openFile: 'Mở tệp',
+      dividerTitle: 'Kéo để thu gọn hoặc mở rộng · Nhấp đúp để chia đều',
+      output: 'Kết quả',
+      code: 'Mã',
+      tree: 'Cây',
+      ready: 'Sẵn sàng',
+      readyHint: 'Dán JSON hoặc dữ liệu dạng key=value để xem kết quả.',
+      treeSearchLabel: 'Tìm trong cây',
+      treeSearchPlaceholder: 'Tìm khóa hoặc giá trị...',
+      errorTitle: 'Chưa thể đọc dữ liệu',
+      download: 'Tải xuống',
+      copy: 'Sao chép',
+      minify: 'Thu gọn',
+      validate: 'Kiểm tra',
+      chars: 'ký tự',
+      lines: 'dòng',
+      formattedCode: 'Mã đã định dạng',
+      enterJsonFirst: 'Hãy nhập JSON trước khi xử lý',
+      unreadable: 'Không đọc được',
+      fixData: 'Cần sửa dữ liệu',
+      unreadableData: 'Không đọc được dữ liệu',
+      recoveredSubtitle: 'Đã đọc dữ liệu chưa chuẩn',
+      minifiedSubtitle: 'JSON đã thu gọn',
+      validSubtitle: 'JSON hợp lệ',
+      noticePrefix: 'Dữ liệu chưa phải JSON chuẩn. Đã đọc để xem dạng cây',
+      noticeEmpty: '; giá trị trống được giữ là chuỗi rỗng',
+      noticeIssues: (n) => ` (${n} chỗ cần lưu ý)`,
+      recoveredStatus: 'Đã đọc dữ liệu chưa chuẩn',
+      minifiedStatus: 'Đã thu gọn JSON',
+      validStatus: 'JSON hợp lệ',
+      reading: 'Đang đọc JSON...',
+      copied: 'Đã sao chép vào bộ nhớ tạm',
+      copyFailed: 'Không thể sao chép tự động',
+      treeHint: 'Nhấp mũi tên để mở hoặc thu gọn nhánh',
+      treeResults: (n) => `${n} kết quả phù hợp`,
+      depthLimit: 'Độ sâu vượt giới hạn hiển thị',
+      toggleBranch: 'Thu gọn hoặc mở nhánh',
+      elements: 'phần tử',
+      keys: 'khóa',
+      lineCol: (line, col, msg) => `Dòng ${line}, cột ${col}: ${msg}`,
+      statusChars: (chars, lines) => `${chars} ký tự · ${lines} dòng`,
+      inputAria: 'Dữ liệu đầu vào',
+      outputViewAria: 'Kiểu hiển thị kết quả',
+      dividerAria: 'Thanh kéo đổi kích thước hai khung',
+      expandPane: (label) => `Mở rộng lại khung ${label}`,
+      langAria: 'Đổi ngôn ngữ',
+      themeAria: 'Đổi giao diện sáng tối',
+      htmlLang: 'vi',
+      locale: 'vi-VN',
+    },
+  };
+  let lang = ['vi', 'en'].includes(localStorage.getItem('json-studio-lang')) ? localStorage.getItem('json-studio-lang') : 'en';
+  const t = (key, ...args) => {
+    const value = STRINGS[lang][key] ?? STRINGS.en[key] ?? key;
+    return typeof value === 'function' ? value(...args) : value;
+  };
+  const fmtNum = (n) => n.toLocaleString(t('locale'));
+
+  function applyLanguage() {
+    document.documentElement.lang = t('htmlLang');
+    document.querySelectorAll('[data-i18n]').forEach((el) => { el.textContent = t(el.dataset.i18n); });
+    document.querySelectorAll('[data-i18n-placeholder]').forEach((el) => { el.placeholder = t(el.dataset.i18nPlaceholder); });
+    document.querySelectorAll('[data-i18n-title]').forEach((el) => { el.title = t(el.dataset.i18nTitle); });
+    $('lang-toggle').textContent = lang === 'en' ? 'VI' : 'EN';
+    $('lang-toggle').setAttribute('aria-label', t('langAria'));
+    $('theme-toggle').setAttribute('aria-label', t('themeAria'));
+    $('theme-toggle').title = t('themeAria');
+    $('json-input').setAttribute('aria-label', t('inputAria'));
+    $('pane-divider').setAttribute('aria-label', t('dividerAria'));
+    document.querySelector('.view-switch').setAttribute('aria-label', t('outputViewAria'));
+    $('indent-size').setAttribute('aria-label', t('indent'));
+    updateInputMeta();
+    $('output-meta').textContent = t('ready');
+    $('output-subtitle').textContent = t('formattedCode');
+    $('tree-results').textContent = $('tree-search').value.trim() ? $('tree-results').textContent : t('treeHint');
+    setStatus(t('ready'));
+    localStorage.setItem('json-studio-lang', lang);
+  }
+
+  $('lang-toggle').addEventListener('click', () => {
+    lang = lang === 'en' ? 'vi' : 'en';
+    applyLanguage();
+    if (state.valid) process(state.mode);
+  });
   const sample = {
     project: 'JSON Studio',
     version: '1.0.0',
@@ -23,7 +186,7 @@
   function updateInputMeta() {
     const count = input.value.length;
     const lines = input.value ? input.value.split('\n').length : 0;
-    $('input-meta').innerHTML = `${count.toLocaleString('vi-VN')} ký tự <span>·</span> ${lines.toLocaleString('vi-VN')} dòng`;
+    $('input-meta').textContent = t('statusChars', fmtNum(count), fmtNum(lines));
   }
 
   function showOnly(id) {
@@ -35,8 +198,8 @@
     state.output = '';
     state.valid = false;
     state.recovered = false;
-    $('output-meta').textContent = 'Sẵn sàng';
-    $('output-subtitle').textContent = 'Mã đã định dạng';
+    $('output-meta').textContent = t('ready');
+    $('output-subtitle').textContent = t('formattedCode');
     $('parse-notice').hidden = true;
     $('copy-btn').disabled = true;
     $('download-btn').disabled = true;
@@ -45,7 +208,7 @@
       $(id).setAttribute('aria-pressed', 'false');
     }
     showOnly('empty-state');
-    setStatus('Sẵn sàng');
+    setStatus(t('ready'));
   }
 
   function escapeHTML(value) {
@@ -74,12 +237,12 @@
   function errorLocation(message, source) {
     const pos = message.match(/position\s+(\d+)/i);
     const explicit = message.match(/line\s+(\d+)\s+column\s+(\d+)/i);
-    if (explicit) return `Dòng ${explicit[1]}, cột ${explicit[2]}: ${message}`;
+    if (explicit) return t('lineCol', explicit[1], explicit[2], message);
     if (!pos) return message;
     const before = source.slice(0, Number(pos[1]));
     const line = before.split('\n').length;
     const column = before.length - before.lastIndexOf('\n');
-    return `Dòng ${line}, cột ${column}: ${message}`;
+    return t('lineCol', line, column, message);
   }
 
   function renderCode() {
@@ -106,12 +269,12 @@
       const toggle = document.createElement('button');
       toggle.type = 'button';
       toggle.className = 'tree-toggle';
-      toggle.setAttribute('aria-label', `Thu gọn hoặc mở ${key === null ? 'gốc' : key}`);
+      toggle.setAttribute('aria-label', t('toggleBranch'));
       toggle.textContent = '▼';
       row.append(toggle);
       if (key !== null) addText(row, `${JSON.stringify(key)}: `, 'tree-key');
       addText(row, Array.isArray(value) ? '[' : '{');
-      addText(row, `  ${entries.length} ${Array.isArray(value) ? 'phần tử' : 'khóa'}`, 'tree-muted');
+      addText(row, `  ${entries.length} ${Array.isArray(value) ? t('elements') : t('keys')}`, 'tree-muted');
       children = document.createElement('div');
       children.className = 'tree-node';
       parent.append(children);
@@ -120,7 +283,7 @@
       } else {
         const limit = document.createElement('div');
         limit.className = 'tree-muted';
-        limit.textContent = 'Độ sâu vượt giới hạn hiển thị';
+        limit.textContent = t('depthLimit');
         children.append(limit);
       }
       const end = document.createElement('div');
@@ -163,7 +326,7 @@
         }
       }
     });
-    $('tree-results').textContent = query ? `${matches} kết quả phù hợp` : 'Nhấp mũi tên để mở hoặc thu gọn nhánh';
+    $('tree-results').textContent = query ? t('treeResults', matches) : t('treeHint');
   }
 
   function setView(view) {
@@ -184,7 +347,7 @@
     if (!source) {
       clearResult();
       input.focus();
-      setStatus('Hãy nhập JSON trước khi xử lý', true);
+      setStatus(t('enterJsonFirst'), true);
       return;
     }
     const parsed = window.JsonStudioParser.parseInput(source);
@@ -196,12 +359,12 @@
       }
       $('parse-notice').hidden = true;
       $('error-message').textContent = errorLocation(parsed.error.message, input.value);
-      $('output-meta').textContent = 'Không đọc được';
-      $('output-subtitle').textContent = 'Cần sửa dữ liệu';
+      $('output-meta').textContent = t('unreadable');
+      $('output-subtitle').textContent = t('fixData');
       $('copy-btn').disabled = true;
       $('download-btn').disabled = true;
       showOnly('error-view');
-      setStatus('Không đọc được dữ liệu', true);
+      setStatus(t('unreadableData'), true);
       return;
     }
     state.value = parsed.value;
@@ -213,15 +376,15 @@
     $('parse-notice').hidden = !parsed.recovered;
     if (parsed.recovered) {
       const emptyValues = parsed.issues.some((issue) => issue.includes('Giá trị trống'));
-      $('parse-notice').textContent = `Dữ liệu chưa phải JSON chuẩn. Đã đọc để xem dạng cây${emptyValues ? '; giá trị trống được giữ là chuỗi rỗng' : ''}${parsed.issues.length ? ` (${parsed.issues.length} chỗ cần lưu ý)` : ''}.`;
+      $('parse-notice').textContent = `${t('noticePrefix')}${emptyValues ? t('noticeEmpty') : ''}${parsed.issues.length ? t('noticeIssues', parsed.issues.length) : ''}.`;
     }
-    $('output-subtitle').textContent = parsed.recovered ? 'Đã đọc dữ liệu chưa chuẩn' : mode === 'minify' ? 'JSON đã thu gọn' : 'JSON hợp lệ';
+    $('output-subtitle').textContent = parsed.recovered ? t('recoveredSubtitle') : mode === 'minify' ? t('minifiedSubtitle') : t('validSubtitle');
     // Đánh dấu nút đang được chọn giống tab Mã/Cây
     $('minify-btn').classList.toggle('active', mode === 'minify');
     $('minify-btn').setAttribute('aria-pressed', String(mode === 'minify'));
     $('validate-btn').classList.toggle('active', mode === 'validate');
     $('validate-btn').setAttribute('aria-pressed', String(mode === 'validate'));
-    $('output-meta').textContent = `${state.output.length.toLocaleString('vi-VN')} ký tự · ${state.output.split('\n').length.toLocaleString('vi-VN')} dòng`;
+    $('output-meta').textContent = t('statusChars', fmtNum(state.output.length), fmtNum(state.output.split('\n').length));
     $('copy-btn').disabled = false;
     $('download-btn').disabled = false;
     renderCode();
@@ -231,7 +394,7 @@
       if (state.view === 'tree') renderTree();
       showOnly(state.view === 'tree' ? 'tree-view' : 'code-view');
     }
-    setStatus(parsed.recovered ? 'Đã đọc dữ liệu chưa chuẩn' : mode === 'minify' ? 'Đã thu gọn JSON' : 'JSON hợp lệ');
+    setStatus(parsed.recovered ? t('recoveredStatus') : mode === 'minify' ? t('minifiedStatus') : t('validStatus'));
   }
 
   function scheduleParse(delay = 400) {
@@ -239,7 +402,7 @@
     updateInputMeta();
     if (state.valid || !$('error-view').hidden) clearResult();
     if (!input.value.trim()) { clearResult(); return; }
-    setStatus('Đang đọc JSON...');
+    setStatus(t('reading'));
     parseTimer = setTimeout(() => process('format'), delay);
   }
 
@@ -265,8 +428,8 @@
     event.target.value = '';
   });
   $('copy-btn').addEventListener('click', async () => {
-    try { await navigator.clipboard.writeText(state.output); setStatus('Đã sao chép vào bộ nhớ tạm'); }
-    catch { setStatus('Không thể sao chép tự động', true); }
+    try { await navigator.clipboard.writeText(state.output); setStatus(t('copied')); }
+    catch { setStatus(t('copyFailed'), true); }
   });
   $('download-btn').addEventListener('click', () => {
     const url = URL.createObjectURL(new Blob([state.output], { type: 'application/json;charset=utf-8' }));
@@ -281,6 +444,7 @@
     localStorage.setItem('json-studio-theme', dark ? 'dark' : 'light');
   });
   if (localStorage.getItem('json-studio-theme') === 'dark') document.body.classList.add('dark');
+  applyLanguage();
 
   // ===== Thanh kéo thu gọn/mở rộng hai khung =====
   const panes = $('panes');
@@ -327,10 +491,10 @@
     btn.type = 'button';
     btn.className = `pane-restore restore-${which}`;
     const vertical = isVertical();
-    const label = which === 'input' ? 'Đầu vào' : 'Kết quả';
+    const label = which === 'input' ? t('input').toLowerCase() : t('output').toLowerCase();
     btn.textContent = vertical ? (which === 'input' ? '⌄' : '⌃') : (which === 'input' ? '›' : '‹');
-    btn.setAttribute('aria-label', `Mở rộng lại khung ${label}`);
-    btn.title = `Mở rộng lại khung ${label}`;
+    btn.setAttribute('aria-label', t('expandPane', label));
+    btn.title = t('expandPane', label);
     btn.addEventListener('click', () => {
       setCollapsed(which === 'input' ? inputPane : outputPane, false);
       ratio = 0.5;
